@@ -1,24 +1,34 @@
 <script lang="ts">
-  import type { Dict, Set } from "./types";
+  import TimestampsDialog from "./lib/TimestampsDialog.svelte";
+
   import { sets } from "./stores";
 
-  type TimeElapsed = { timestamp: string; aria: string; elapsed: string };
+  import type { Dict, Set, TimeElapsed } from "./types";
+  import { parseElapsed } from "./util";
+
+  let timestampDialogTarget: Set = null;
 
   $: elapsed = $sets.reduce<Dict<TimeElapsed>>(
-    (acc, set) => ({ ...acc, [set.id]: parseElapsed(set.timestamps) }),
+    (acc, set) => ({
+      ...acc,
+      [set.id]: parseElapsed(set.timestamps.map((ts) => new Date(ts))),
+    }),
     {}
   );
 
-  function onEditTimestamps(id: Set["id"]) {
-    throw new Error("not implemented");
-  }
-  function onDeleteSet(set: Set) {
-    $sets = $sets.filter((item) => item !== set);
-  }
   function onShowDetails(timestamps: Set["timestamps"], e: Event) {
     if (timestamps.length === 0) e.preventDefault();
   }
-  function onAddSet() {
+  function onEditTimestamps(set: Set) {
+    timestampDialogTarget = set;
+  }
+  function onCloseTimestampDialog() {
+    timestampDialogTarget = null;
+  }
+  function onDelete(set: Set) {
+    $sets = $sets.filter((item) => item !== set);
+  }
+  function onAdd() {
     $sets = [
       ...$sets,
       {
@@ -31,35 +41,6 @@
         timestamps: [],
       },
     ];
-  }
-
-  function parseElapsed(timestamps: Date[]): TimeElapsed {
-    if (timestamps.length < 2)
-      return {
-        timestamp: "",
-        aria: "no time elapsed",
-        elapsed: "00:00",
-      };
-
-    const first = timestamps[0];
-    const last = timestamps[timestamps.length - 1];
-    const msElapsed = timestamps.reduce((acc, timestamp, i) => {
-      return i % 2 === 0
-        ? acc - timestamp.getTime()
-        : acc + timestamp.getTime();
-    }, 0);
-    const secElapsed = Math.floor(msElapsed / 1000);
-
-    const minutesElapsed = Math.floor(secElapsed / 60);
-    const secondsElapsed = secElapsed % 60;
-
-    const timestamp = `${first.toLocaleString()} to ${last.toLocaleTimeString()}`;
-    const aria = `${minutesElapsed} minutes and ${secondsElapsed} seconds elapsed`;
-    const elapsed = [minutesElapsed, secondsElapsed]
-      .map((n) => `0${n}`.slice(-2))
-      .join(":");
-
-    return { timestamp, aria, elapsed };
   }
 </script>
 
@@ -143,10 +124,13 @@
               title={elapsed[set.id].aria}
             >
               <summary>
-                <span>{set.timestamps[0]?.toLocaleString() ?? ""}</span>
+                <span>
+                  {set.timestamps.length
+                    ? new Date(set.timestamps[0]).toLocaleString()
+                    : ""}
+                </span>
                 <button
-                  on:click={onEditTimestamps.bind(null, set.timestamps)}
-                  type="button"
+                  on:click={onEditTimestamps.bind(null, set)}
                   id={`timestamps-${set.id}`}
                   name={`timestamps-${set.id}`}
                 >
@@ -158,12 +142,15 @@
                 <span>({elapsed[set.id].elapsed})</span>
               </div>
             </details>
-            <span />
+            <TimestampsDialog
+              bind:set
+              on:close={onCloseTimestampDialog}
+              open={set === timestampDialogTarget}
+            />
           </td>
           <td>
             <button
-              on:click={onDeleteSet.bind(null, set)}
-              type="button"
+              on:click={onDelete.bind(null, set)}
               id={`delete-${set.id}`}
               name={`delete-${set.id}`}
               aria-label="delete"
@@ -175,9 +162,7 @@
       {/each}
       <tr>
         <td>
-          <button on:click={onAddSet} type="button" title="add empty set">
-            &plus;
-          </button>
+          <button on:click={onAdd}>Add Set</button>
         </td>
       </tr>
     </tbody>

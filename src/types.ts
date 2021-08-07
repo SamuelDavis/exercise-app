@@ -1,3 +1,4 @@
+// GENERAL
 export type Dict<T> = { [key: string]: T };
 export type Record = { id: string };
 export type Set = Record & {
@@ -6,7 +7,9 @@ export type Set = Record & {
   repetitions: number;
   workload: number;
   exertion: number;
-  timestamps: Date[];
+  timestamps: string[];
 };
+export type JSONSet = Set & { timestamps: number[] };
 
-export type JSONSet = Set & { timestamps: string[] };
+// SPECIFIC
+export type TimeElapsed = { timestamp: string; aria: string; elapsed: string };
