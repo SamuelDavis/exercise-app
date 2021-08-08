@@ -43,6 +43,36 @@
       },
     ];
   }
+  function onExportCSV() {
+    const headers = [
+      "id",
+      "exercise",
+      "modality",
+      "repetitions",
+      "workload",
+      "exertion",
+      "timestamps",
+    ];
+    const rows = $sets.map((set) => {
+      return [
+        set.id,
+        set.exercise,
+        set.modality,
+        set.repetitions,
+        set.workload,
+        set.exertion,
+        set.timestamps.join(","),
+      ];
+    });
+
+    const text = [headers, ...rows]
+      .map((row) => row.map((col) => JSON.stringify(col)).join(","))
+      .join("\n");
+    const a = window.document.createElement("a");
+    a.href = window.URL.createObjectURL(new Blob([text], { type: "text/csv" }));
+    a.download = "ex-app-export.csv";
+    a.click();
+  }
 </script>
 
 <main>
@@ -173,6 +203,7 @@
       <tr>
         <td>
           <button on:click={onAdd}>Add Set</button>
+          <button on:click={onExportCSV}>Export as CSV</button>
         </td>
       </tr>
     </tbody>
