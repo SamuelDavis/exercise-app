@@ -1,7 +1,8 @@
 <script lang="ts">
+  import Text from "./input/Text.svelte";
   import TimestampsDialog from "./lib/TimestampsDialog.svelte";
 
-  import { sets } from "./stores";
+  import { exercises, modalities, sets } from "./stores";
 
   import type { Dict, Set, TimeElapsed } from "./types";
   import { parseElapsed } from "./util";
@@ -61,25 +62,24 @@
       {#each $sets as set (set.id)}
         <tr>
           <td>
-            <input
+            <Text
               bind:value={set.exercise}
               type="text"
               id={`exercise-${set.id}`}
               name={`exercise-${set.id}`}
-              pattern="[\w\-\(\) ]+"
+              pattern="[\w\(\)\- ]"
               required
-              list={`exercise-suggestions-${set.id}`}
+              options={$exercises}
             />
-            <datalist id={`exercise-suggestions-${set.id}`} />
           </td>
           <td>
-            <input
+            <Text
               bind:value={set.modality}
               type="text"
               id={`modality-${set.id}`}
               name={`modality-${set.id}`}
-              pattern="[\w\-\(\) ]+"
-              list={`modality-suggestions-${set.id}`}
+              pattern="[\w\(\)\- ]"
+              options={$modalities[set.exercise]}
             />
             <datalist id={`modality-suggestions-${set.id}`} />
           </td>
@@ -124,11 +124,6 @@
               title={elapsed[set.id].aria}
             >
               <summary>
-                <span>
-                  {set.timestamps.length
-                    ? new Date(set.timestamps[0]).toLocaleString()
-                    : ""}
-                </span>
                 <button
                   on:click={onEditTimestamps.bind(null, set)}
                   id={`timestamps-${set.id}`}
@@ -136,6 +131,11 @@
                 >
                   Edit
                 </button>
+                <span>
+                  {set.timestamps.length
+                    ? new Date(set.timestamps[0]).toLocaleString()
+                    : ""}
+                </span>
               </summary>
               <div>
                 <span>{elapsed[set.id].timestamp}</span>
