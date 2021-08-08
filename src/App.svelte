@@ -31,7 +31,6 @@
   }
   function onAdd() {
     $sets = [
-      ...$sets,
       {
         id: String(new Date().getTime() + Math.random()),
         exercise: "",
@@ -41,6 +40,7 @@
         exertion: 0,
         timestamps: [],
       },
+      ...$sets,
     ];
   }
   function onExportCSV() {
@@ -76,6 +76,8 @@
 </script>
 
 <main>
+  <button on:click={onAdd}>Add Set</button>
+  <button on:click={onExportCSV}>Export as CSV</button>
   <table>
     <thead>
       <tr>
@@ -200,12 +202,16 @@
           </td>
         </tr>
       {/each}
-      <tr>
-        <td>
-          <button on:click={onAdd}>Add Set</button>
-          <button on:click={onExportCSV}>Export as CSV</button>
-        </td>
-      </tr>
     </tbody>
   </table>
 </main>
+
+<style>
+  table {
+    border-collapse: collapse;
+  }
+  th {
+    text-align: left;
+    border-bottom: 2px solid black;
+  }
+</style>
