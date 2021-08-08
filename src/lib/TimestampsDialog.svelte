@@ -11,9 +11,7 @@
   let dialog: HTMLDialogElement;
 
   $: elapsed = parseElapsed(set.timestamps.map((ts) => new Date(ts)));
-  $: timestampPairs = new Array(
-    Math.max(1, Math.ceil(set.timestamps.length / 2))
-  )
+  $: timestampPairs = new Array(Math.ceil(set.timestamps.length / 2))
     .fill(undefined)
     .map((_, i) => {
       let end = set.timestamps.length - 1 - i * 2;

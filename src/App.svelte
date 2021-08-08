@@ -68,8 +68,8 @@
               id={`exercise-${set.id}`}
               name={`exercise-${set.id}`}
               pattern="[\w\(\)\- ]"
-              required
               options={$exercises}
+              required
             />
           </td>
           <td>
@@ -101,6 +101,7 @@
               type="number"
               id={`workload-${set.id}`}
               name={`workload-${set.id}`}
+              step="0.25"
               min="0"
               max="9999"
               required
@@ -110,8 +111,17 @@
             <input
               bind:value={set.exertion}
               type="range"
+              step="1"
+              min="0"
+              max="10"
+              required
+            />
+            <input
+              bind:value={set.exertion}
+              readonly
               id={`exertion-${set.id}`}
               name={`exertion-${set.id}`}
+              type="number"
               step="1"
               min="0"
               max="10"
