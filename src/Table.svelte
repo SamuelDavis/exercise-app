@@ -75,7 +75,7 @@
   }
 </script>
 
-<main>
+<section>
   <button on:click={onAdd}>Add Set</button>
   <button on:click={onExportCSV}>Export as CSV</button>
   <table>
@@ -204,7 +204,7 @@
       {/each}
     </tbody>
   </table>
-</main>
+</section>
 
 <style>
   table {
