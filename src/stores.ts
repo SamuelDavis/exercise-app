@@ -33,6 +33,15 @@ export const modalities = derived([sets], ([sets]) => {
     }
   );
 });
+export const suggest = derived([sets], ([sets]) => {
+  return function (key: keyof Set, value?: string | number) {
+    const history = new Set<Set[keyof Set]>();
+    history.add(value);
+    for (const set of sets) history.add(set[key]);
+
+    return Array.from(history);
+  };
+});
 
 function readSetsFromLocalStorage(): Set[] {
   const raw: JSONSet[] = JSON.parse(
